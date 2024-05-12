@@ -12,7 +12,7 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-dag = DAG('bd_to_bd',
+dag = DAG('bd_to_bd_1',
           default_args=default_args,
           description='Process flight delays data',
           schedule_interval=None,
@@ -20,25 +20,25 @@ dag = DAG('bd_to_bd',
           catchup=False)
 
 def process_flight_delays():
-    # Загрузка данных из файла flight_delays.csv
+    # Г‡Г ГЈГ°ГіГ§ГЄГ  Г¤Г Г­Г­Г»Гµ ГЁГ§ ГґГ Г©Г«Г  flight_delays.csv
     flight_delays_df = pd.read_csv('/opt/airflow/dags/flight_delays.csv')
 
-    # Загрузка данных из файла Month.csv
+    # Г‡Г ГЈГ°ГіГ§ГЄГ  Г¤Г Г­Г­Г»Гµ ГЁГ§ ГґГ Г©Г«Г  Month.csv
     month_df = pd.read_csv('/opt/airflow/dags/Month.csv', sep=';', header=None, names=['Month', 'Month_Name'], index_col='Month', encoding='cp1252')
 
-    # Преобразование кодов месяцев в соответствующие названия из Month.csv
+    # ГЏГ°ГҐГ®ГЎГ°Г Г§Г®ГўГ Г­ГЁГҐ ГЄГ®Г¤Г®Гў Г¬ГҐГ±ГїГ¶ГҐГў Гў Г±Г®Г®ГІГўГҐГІГ±ГІГўГіГѕГ№ГЁГҐ Г­Г Г§ГўГ Г­ГЁГї ГЁГ§ Month.csv
     flight_delays_df['Month'] = flight_delays_df['Month'].map(month_df['Month_Name'])
 
-    # Загрузка данных из файла DayOfWeek.csv
+    # Г‡Г ГЈГ°ГіГ§ГЄГ  Г¤Г Г­Г­Г»Гµ ГЁГ§ ГґГ Г©Г«Г  DayOfWeek.csv
     day_of_week_df = pd.read_csv('/opt/airflow/dags/DayOfWeek.csv', sep=';', header=None, names=['DayOfWeek', 'DayOfWeek_Name'], index_col='DayOfWeek', encoding='cp1252')
 
-    # Преобразование кодов дней недели в соответствующие названия из DayOfWeek.csv
+    # ГЏГ°ГҐГ®ГЎГ°Г Г§Г®ГўГ Г­ГЁГҐ ГЄГ®Г¤Г®Гў Г¤Г­ГҐГ© Г­ГҐГ¤ГҐГ«ГЁ Гў Г±Г®Г®ГІГўГҐГІГ±ГІГўГіГѕГ№ГЁГҐ Г­Г Г§ГўГ Г­ГЁГї ГЁГ§ DayOfWeek.csv
     flight_delays_df['DayOfWeek'] = flight_delays_df['DayOfWeek'].map(day_of_week_df['DayOfWeek_Name'])
 
-    # Сохранение в новый CSV файл
+    # Г‘Г®ГµГ°Г Г­ГҐГ­ГЁГҐ Гў Г­Г®ГўГ»Г© CSV ГґГ Г©Г«
     flight_delays_df.to_csv('/opt/airflow/dags/merged_flight_delays.csv', index=False)
 
-    # Вывод результата
+    # Г‚Г»ГўГ®Г¤ Г°ГҐГ§ГіГ«ГјГІГ ГІГ 
     print(flight_delays_df)
 
 process_flight_delays_task = PythonOperator(
